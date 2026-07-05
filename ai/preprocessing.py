@@ -1,26 +1,17 @@
-from torchvision import transforms
+import tensorflow as tf
 from config import IMAGE_SIZE
 
 
-def get_train_transform(image_size=IMAGE_SIZE):
-    return transforms.Compose([
-        transforms.Resize((image_size, image_size)),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomRotation(10),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225]
-        )
-    ])
+def load_and_preprocess(image_path, label):
+    image = tf.io.read_file(image_path)
+    image = tf.image.decode_image(image, channels=3, expand_animations=False)
+    image = tf.image.resize(image, (IMAGE_SIZE, IMAGE_SIZE))
+    image = tf.cast(image, tf.float32) / 255.0
+    return image, label
 
 
-def get_val_transform(image_size=IMAGE_SIZE):
-    return transforms.Compose([
-        transforms.Resize((image_size, image_size)),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225]
-        )
-    ])
+def augment_image(image, label):
+    image = tf.image.random_flip_left_right(image)
+    image = tf.image.random_brightness(image, 0.08)
+    image = tf.image.random_contrast(image, 0.9, 1.1)
+    return image, label
