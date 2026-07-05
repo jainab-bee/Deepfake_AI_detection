@@ -1,35 +1,40 @@
-"""Training entry point for the deepfake detection model."""
+"""Simple image prediction script using Keras."""
 
 from pathlib import Path
 
-import torch
-from torch.utils.data import DataLoader
+import tensorflow as tf
+from PIL import Image
 
-from custom_dataset import CustomImageDataset
-from preprocessing import build_transform
-from cnn import SimpleCNN
+from cnn import build_cnn
+from config import MODEL_PATH
+from preprocessing import val_preprocess
 
 
-def main():
-    data_dir = Path("../datasets")
-    train_dataset = CustomImageDataset(str(data_dir), transform=build_transform())
-    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+def predict(image_path: str):
+    image = Image.open(image_path).convert("RGB")
+    image = tf.keras.preprocessing.image.img_to_array(image)
+    image = tf.expand_dims(image, axis=0)
+    image = tf.image.resize(image, (224, 224)) / 255.0
 
-    model = SimpleCNN(num_classes=2)
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    model = build_cnn(num_classes=2)
+    model.load_weights(MODEL_PATH)
 
-    for epoch in range(1):
-        for images, labels in train_loader:
-            optimizer.zero_grad()
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
+    result = model.predict(image, verbose=0)[0]
+    pred = int(result.argmax())
+    confidence = float(result[pred])
 
-    torch.save(model.state_dict(), "saved_models/simple_cnn.pth")
-    print("Training completed and model saved.")
+    if pred == 0:
+        label = "AI Generated"
+    else:
+        label = "Real"
+
+    print(f"Prediction: {label}")
+    print(f"Confidence: {confidence:.2f}")
 
 
 if __name__ == "__main__":
-    main()
+    sample = Path("../uploads/sample.jpg")
+    if sample.exists():
+        predict(str(sample))
+    else:
+        print("Put an image at uploads/sample.jpg first.")

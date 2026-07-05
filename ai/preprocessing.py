@@ -1,16 +1,26 @@
-"""Image preprocessing helpers for training and inference."""
-
-from PIL import Image
 from torchvision import transforms
+from config import IMAGE_SIZE
 
 
-def build_transform(image_size: int = 224):
+def get_train_transform(image_size=IMAGE_SIZE):
     return transforms.Compose([
         transforms.Resize((image_size, image_size)),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(10),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        )
     ])
 
 
-def load_image(path: str):
-    return Image.open(path).convert("RGB")
+def get_val_transform(image_size=IMAGE_SIZE):
+    return transforms.Compose([
+        transforms.Resize((image_size, image_size)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        )
+    ])

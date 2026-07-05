@@ -1,27 +1,30 @@
-"""Simple CNN model for binary classification."""
+import tensorflow as tf
+from tensorflow.keras import layers, models
 
-import torch
-import torch.nn as nn
+def build_cnn(input_shape=(224, 224, 3), num_classes=2):
+    model = models.Sequential()
 
+    model.add(layers.Conv2D(32, (3,3), activation='relu', input_shape=input_shape))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPooling2D(2,2))
 
-class SimpleCNN(nn.Module):
-    def __init__(self, num_classes: int = 2):
-        super().__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-        )
-        self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(64 * 56 * 56, 128),
-            nn.ReLU(),
-            nn.Linear(128, num_classes),
-        )
+    model.add(layers.Conv2D(64, (3,3), activation='relu'))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPooling2D(2,2))
 
-    def forward(self, x):
-        x = self.features(x)
-        return self.classifier(x)
+    model.add(layers.Conv2D(128, (3,3), activation='relu'))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPooling2D(2,2))
+
+    model.add(layers.Conv2D(256, (3,3), activation='relu'))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPooling2D(2,2))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(256, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dropout(0.3))
+    model.add(layers.Dense(num_classes, activation='softmax'))
+
+    return model

@@ -1,32 +1,45 @@
-# AI Deepfake Detection
+# AI Image Authenticity Detector
 
-This project provides a deep learning pipeline for detecting deepfake images using convolutional neural networks and EfficientNet-based models.
+This is a simple and beginner-friendly deep learning project that classifies images as either:
 
-## Project Structure
+- 0 = AI Generated
+- 1 = Real
 
-- `ai/`: training, preprocessing, model, and prediction scripts
-- `app/`: backend application code
-- `frontend/`: frontend assets and UI code
-- `outputs/`: generated results and model outputs
-- `uploads/`: uploaded images or videos for inference
-- `reports/`: evaluation reports and visualizations
+## What this version includes
+
+- A small CNN model
+- Simple image preprocessing
+- Training and prediction scripts
+- A clean project folder structure
+
+## Folder structure
+
+- ai/: model, training, and prediction code
+- app/: backend code (can be added later)
+- frontend/: UI code (can be added later)
+- uploads/: place your test images here
+- outputs/: generated results
+- reports/: reports and charts
 
 ## Setup
 
-1. Create a virtual environment
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Run training:
+2. Create a dataset folder with two subfolders:
+   - dataset/train/ai/
+   - dataset/train/real/
+3. Put sample images inside each folder.
+4. Train the model:
    ```bash
    python ai/train.py
    ```
-4. Run inference:
+5. Run prediction:
    ```bash
    python ai/predict.py
    ```
 
 ## Notes
 
-The current structure is meant as a starter scaffold for a deepfake detection system and can be expanded with a web app, dataset handling, and deployment support.
+This version is intentionally simple so it is easy to learn and modify. It is a good starting point for a real-world deepfake detector project.
